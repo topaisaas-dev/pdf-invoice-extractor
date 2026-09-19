@@ -10,7 +10,7 @@ export function getSecurityHeaders(): HeadersInit {
     "X-Frame-Options": "DENY",
     "X-XSS-Protection": "1; mode=block",
     "Referrer-Policy": "no-referrer",
-    "Content-Security-Policy": "default-src 'none'",
+    "Content-Security-Policy": "default-src 'self' 'unsafe-inline' data:; frame-ancestors 'none';",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, X-RapidAPI-Key, X-RapidAPI-Host",
