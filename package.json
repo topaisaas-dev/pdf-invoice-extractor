@@ -1,0 +1,23 @@
+{
+  "name": "pdf-invoice-extractor",
+  "version": "1.0.0",
+  "description": "Zero-Cost High-Precision Algorithmic PDF & Invoice Data Extractor for AI Agents & FinTech",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test tests/extractor.test.js"
+  },
+  "keywords": ["invoice", "pdf", "fintech", "ai-agents", "ocr", "vat", "iban", "data-extraction", "cloudflare-worker"],
+  "author": "topaisaas-dev",
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.99.0"
+  }
+}
