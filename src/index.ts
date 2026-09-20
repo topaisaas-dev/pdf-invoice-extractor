@@ -110,7 +110,7 @@ Net à payer : 3240.00 €</textarea>
     </div>
 
     <div class="links-bar">
-      <a href="https://rapidapi.com/user/topaisaasdev" target="_blank">⚡ RapidAPI Marketplace</a>
+      <a href="https://rapidapi.com/topaisaasdev/api/pdf-invoice-extractor-api/pricing" target="_blank">⚡ RapidAPI Marketplace</a>
       <a href="https://github.com/topaisaas-dev/pdf-invoice-extractor" target="_blank">📦 GitHub Repository</a>
       <a href="/openapi.json" target="_blank">📄 OpenAPI Specification</a>
       <a href="/v1/sample" target="_blank">📋 Sample Payload</a>
