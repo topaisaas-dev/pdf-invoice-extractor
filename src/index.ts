@@ -112,7 +112,8 @@ Net à payer : 3240.00 €</textarea>
     <div class="links-bar">
       <a href="https://rapidapi.com/user/topaisaas-dev" target="_blank">⚡ RapidAPI Marketplace</a>
       <a href="https://github.com/topaisaas-dev/pdf-invoice-extractor" target="_blank">📦 GitHub Repository</a>
-      <a href="/v1/sample" target="_blank">📄 Sample Payload</a>
+      <a href="/openapi.json" target="_blank">📄 OpenAPI Specification</a>
+      <a href="/v1/sample" target="_blank">📋 Sample Payload</a>
     </div>
   </div>
 
@@ -166,6 +167,115 @@ app.get("/v1/health", (c) => {
       "math-reconciliation-ht-ttc",
       "pdf-native-stream-decoding"
     ]
+  });
+});
+
+/**
+ * GET /openapi.json - OpenAPI 3.0.3 specification
+ */
+app.get("/openapi.json", (c) => {
+  return c.json({
+    openapi: "3.0.3",
+    info: {
+      title: "PDF & Invoice Data Extractor API",
+      description: "High-performance, zero-LLM-token algorithmic engine for parsing, extracting, and mathematically auditing invoices, receipts, line items, and ISO 7064 IBAN & EU VAT numbers into clean, type-safe JSON for AI agents, fintech workflows, and ERP automation.",
+      version: "1.0.0",
+      contact: {
+        name: "TopAI SaaS Dev",
+        email: "top.ai.saas@gmail.com"
+      }
+    },
+    servers: [
+      {
+        url: "https://pdf-invoice-extractor.topaisaas.workers.dev",
+        description: "Cloudflare Workers Global Edge Production"
+      }
+    ],
+    paths: {
+      "/v1/extract": {
+        post: {
+          summary: "Extract Invoice Data & Financial Audit",
+          description: "Parses raw invoice text or base64 PDF streams into structured JSON with supplier coordinates, dates, totals, itemized line items table, and mathematical fraud audit.",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    text: {
+                      type: "string",
+                      description: "Raw invoice text or OCR output",
+                      example: "ACME Solutions SAS\n12 Rue de la Paix, 75002 Paris\nSIRET : 83921094800012\nN° TVA : FR12839210948\nIBAN : FR8330004012345678901234586\nFACTURE N° : INV-2024-00892\nDate : 15/04/2024\nClient : Global Retail Group SA\nAbonnement Cloud Pro  1  1200.00  1200.00 €\nAudit SOC2           2   750.00  1500.00 €\nTotal H.T. : 2700.00 €\nTVA (20%) : 540.00 €\nNet à payer : 3240.00 €"
+                    },
+                    pdf_base64: {
+                      type: "string",
+                      description: "Base64 encoded PDF binary data (optional, alternative to text)",
+                      example: ""
+                    },
+                    currency_fallback: {
+                      type: "string",
+                      description: "Fallback ISO currency code if symbol not found in document",
+                      example: "EUR",
+                      default: "EUR"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            "200": { description: "Invoice extracted and audited successfully" },
+            "400": { description: "Invalid JSON or missing fields" },
+            "422": { description: "Insufficient invoice content" }
+          }
+        }
+      },
+      "/v1/validate": {
+        post: {
+          summary: "Financial Reconciliation & IBAN / VAT Check",
+          description: "Validates mathematical consistency (Subtotal HT + VAT == Total TTC), EU VAT number syntax, and ISO 7064 IBAN MOD 97 checksum.",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    subtotal_ht: { type: "number", example: 2700.0 },
+                    tax_amount: { type: "number", example: 540.0 },
+                    total_ttc: { type: "number", example: 3240.0 },
+                    vat_number: { type: "string", example: "FR12839210948" },
+                    iban: { type: "string", example: "FR8330004012345678901234586" }
+                  }
+                }
+              }
+            }
+          },
+          responses: {
+            "200": { description: "Validation checks completed" }
+          }
+        }
+      },
+      "/v1/sample": {
+        get: {
+          summary: "Get Sample Invoice Input & Output",
+          description: "Returns mock invoice text and instructions for rapid 1-click testing.",
+          responses: {
+            "200": { description: "Sample returned successfully" }
+          }
+        }
+      },
+      "/v1/health": {
+        get: {
+          summary: "Healthcheck & System Status",
+          description: "Returns 24/7 uptime status and extraction capabilities.",
+          responses: {
+            "200": { description: "Service is operational" }
+          }
+        }
+      }
+    }
   });
 });
 

@@ -1,0 +1,211 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PDF & Invoice Data Extractor API",
+    "description": "High-performance, zero-LLM-token algorithmic engine for parsing, extracting, and mathematically auditing invoices, receipts, line items, and ISO 7064 IBAN & EU VAT numbers into clean, type-safe JSON for AI agents, fintech workflows, and ERP automation.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "TopAI SaaS Dev",
+      "email": "top.ai.saas@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://pdf-invoice-extractor.topaisaas.workers.dev",
+      "description": "Cloudflare Workers Global Edge Production"
+    }
+  ],
+  "paths": {
+    "/v1/extract": {
+      "post": {
+        "summary": "Extract Invoice Data & Financial Audit",
+        "description": "Parses raw invoice text or base64 PDF streams into structured JSON with supplier coordinates, dates, totals, itemized line items table, and mathematical fraud audit.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "description": "Raw invoice text or OCR output",
+                    "example": "ACME Solutions SAS\n12 Rue de la Paix, 75002 Paris\nSIRET : 83921094800012\nN° TVA : FR12839210948\nIBAN : FR8330004012345678901234586\nFACTURE N° : INV-2024-00892\nDate : 15/04/2024\nClient : Global Retail Group SA\nAbonnement Cloud Pro  1  1200.00  1200.00 €\nAudit SOC2           2   750.00  1500.00 €\nTotal H.T. : 2700.00 €\nTVA (20%) : 540.00 €\nNet à payer : 3240.00 €"
+                  },
+                  "pdf_base64": {
+                    "type": "string",
+                    "description": "Base64 encoded PDF binary data (optional, alternative to text)",
+                    "example": ""
+                  },
+                  "currency_fallback": {
+                    "type": "string",
+                    "description": "Fallback ISO currency code if symbol not found in document",
+                    "example": "EUR",
+                    "default": "EUR"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invoice extracted and audited successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "invoice_number": { "type": "string", "example": "INV-2024-00892" },
+                    "dates": {
+                      "type": "object",
+                      "properties": {
+                        "invoice_date": { "type": "string", "example": "2024-04-15" },
+                        "due_date": { "type": "string", "example": "2024-05-15" }
+                      }
+                    },
+                    "supplier": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string", "example": "ACME Solutions SAS" },
+                        "siret": { "type": "string", "example": "83921094800012" },
+                        "vat_number": { "type": "string", "example": "FR12839210948" },
+                        "iban": { "type": "string", "example": "FR8330004012345678901234586" },
+                        "email": { "type": "string", "example": "contact@acme-solutions.fr" }
+                      }
+                    },
+                    "client": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string", "example": "Global Retail Group SA" }
+                      }
+                    },
+                    "financials": {
+                      "type": "object",
+                      "properties": {
+                        "currency": { "type": "string", "example": "EUR" },
+                        "currency_symbol": { "type": "string", "example": "€" },
+                        "subtotal_ht": { "type": "number", "example": 2700.0 },
+                        "tax_amount": { "type": "number", "example": 540.0 },
+                        "tax_rate_detected": { "type": "number", "example": 20.0 },
+                        "total_ttc": { "type": "number", "example": 3240.0 }
+                      }
+                    },
+                    "line_items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "description": { "type": "string", "example": "Abonnement Cloud Pro" },
+                          "quantity": { "type": "number", "example": 1 },
+                          "unit_price_ht": { "type": "number", "example": 1200.0 },
+                          "total_ht": { "type": "number", "example": 1200.0 }
+                        }
+                      }
+                    },
+                    "audit": {
+                      "type": "object",
+                      "properties": {
+                        "is_math_valid": { "type": "boolean", "example": true },
+                        "math_difference": { "type": "number", "example": 0 },
+                        "is_iban_valid": { "type": "boolean", "example": true },
+                        "confidence_score": { "type": "integer", "example": 95 }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid JSON or missing fields" },
+          "422": { "description": "Insufficient invoice content" }
+        }
+      }
+    },
+    "/v1/validate": {
+      "post": {
+        "summary": "Financial Reconciliation & IBAN / VAT Check",
+        "description": "Validates mathematical consistency (Subtotal HT + VAT == Total TTC), EU VAT number syntax, and ISO 7064 IBAN MOD 97 checksum.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subtotal_ht": { "type": "number", "example": 2700.0 },
+                  "tax_amount": { "type": "number", "example": 540.0 },
+                  "total_ttc": { "type": "number", "example": 3240.0 },
+                  "vat_number": { "type": "string", "example": "FR12839210948" },
+                  "iban": { "type": "string", "example": "FR8330004012345678901234586" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validation checks completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "is_valid": { "type": "boolean", "example": true },
+                    "checks": {
+                      "type": "object",
+                      "properties": {
+                        "math": {
+                          "type": "object",
+                          "properties": {
+                            "passed": { "type": "boolean", "example": true },
+                            "calculated_total": { "type": "number", "example": 3240.0 },
+                            "declared_total": { "type": "number", "example": 3240.0 },
+                            "difference": { "type": "number", "example": 0.0 }
+                          }
+                        },
+                        "vat": {
+                          "type": "object",
+                          "properties": {
+                            "passed": { "type": "boolean", "example": true },
+                            "country": { "type": "string", "example": "FR" },
+                            "vat_number": { "type": "string", "example": "FR12839210948" }
+                          }
+                        },
+                        "iban": {
+                          "type": "object",
+                          "properties": {
+                            "passed": { "type": "boolean", "example": true },
+                            "country": { "type": "string", "example": "FR" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sample": {
+      "get": {
+        "summary": "Get Sample Invoice Input & Output",
+        "description": "Returns mock invoice text and instructions for rapid 1-click testing.",
+        "responses": {
+          "200": { "description": "Sample returned successfully" }
+        }
+      }
+    },
+    "/v1/health": {
+      "get": {
+        "summary": "Healthcheck & System Status",
+        "description": "Returns 24/7 uptime status and extraction capabilities.",
+        "responses": {
+          "200": { "description": "Service is operational" }
+        }
+      }
+    }
+  }
+}
