@@ -1,7 +1,7 @@
 # PDF & Invoice Data Extractor API
 
 [![Status](https://img.shields.io/badge/Status-Operational-brightgreen)](https://pdf-invoice-extractor.topaisaas.workers.dev/v1/health)
-[![RapidAPI](https://img.shields.io/badge/RapidAPI-Subscribe-blue?logo=rapidapi)](https://rapidapi.com/user/topaisaas-dev)
+[![RapidAPI](https://img.shields.io/badge/RapidAPI-Subscribe-blue?logo=rapidapi)](https://rapidapi.com/user/topaisaasdev)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Cloudflare%20Workers-orange)](https://workers.cloudflare.com)
 [![Zero Cost](https://img.shields.io/badge/Tokens%20Cost-%E2%82%AC0.00%20(Zero%20LLM)-success)](https://topaisaas.com)
